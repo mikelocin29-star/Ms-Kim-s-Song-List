@@ -1,325 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Song List</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-  <style>
-    body {
-      background-color: #222;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-
-    /* Navigation & Links */
-    .nav-container {
-      margin-bottom: 25px;
-      background: #111;
-      padding: 10px 20px;
-      border-radius: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .nav-container a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-      transition: color 0.2s;
-    }
-
-    .nav-container a:hover {
-      color: #4CAF50;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    p {
-      color: #aaa;
-      margin-bottom: 20px;
-      text-align: center;
-      max-width: 650px;
-    }
-
-    /* Library Table Styles (Used when viewed on the main library page) */
-    .library-box {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      width: 100%;
-      max-width: 550px;
-      margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #333;
-    }
-
-    th {
-      font-weight: 600;
-      color: #aaa;
-      background-color: #111;
-    }
-
-    tr:hover td {
-      background-color: #252525;
-    }
-
-    table a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-
-    table a:hover {
-      text-decoration: underline;
-    }
-
-    .placeholder {
-      color: #666;
-    }
-
-    /* Sheet Music & Piano Styles (Used on song pages) */
-    .sheet-music {
-      max-width: 400px;
-      width: 100%;
-      height: auto;
-      margin-bottom: 25px;
-      border-radius: 8px;
-      background: #fff;
-      padding: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-
-    #piano {
-      display: flex;
-      position: relative;
-      background: #000;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .key {
-      box-sizing: border-box;
-      position: relative;
-      cursor: pointer;
-      user-select: none;
-      border-radius: 0 0 5px 5px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      font-weight: bold;
-      transition: background 0.1s;
-    }
-
-    .white {
-      width: 40px;
-      height: 180px;
-      background: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-      z-index: 1;
-      padding-bottom: 12px;
-      font-size: 11px;
-    }
-
-    .white.active, .white:active {
-      background: #d4d4d4;
-    }
-
-    .black {
-      width: 24px;
-      height: 110px;
-      background: #333;
-      color: #fff;
-      position: absolute;
-      z-index: 2;
-      border-radius: 0 0 4px 4px;
-      border: 1px solid #111;
-      padding-bottom: 8px;
-      font-size: 9px;
-    }
-
-    .black.active, .black:active {
-      background: #555;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Notation Library</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #333;
+            line-height: 1.6;
+            background-color: #fdfdfd;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        th {
+            font-weight: 600;
+            color: #555;
+            background-color: #f7f7f7;
+        }
+        tr:hover td {
+            background-color: #fafafa;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .placeholder {
+            color: #ccc;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- 
-    NOTE FOR MAIN LIBRARY vs SONG PAGES:
-    - If you want this file to act as your MAIN LIBRARY table, leave the library section 
-      visible below and keep the comment markers. 
-    - If you want this file to act as a SONG PAGE, simply delete the 'library-section' 
-      div block below and make sure your 'notation.png' is uploaded!
-  -->
+    <h1>Music Notation Library</h1>
 
-  <!-- MAIN LIBRARY TABLE SECTION (Delete this block on individual song pages) -->
-  <div id="library-section" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-    <h1>Ms Kim's Song List</h1>
-    <p>Select a song from the list below to view its notation and interactive player.</p>
-    
-    <div class="library-box">
-      <table>
+    <table>
         <thead>
-          <tr>
-            <th style="width: 50px;">#</th>
-            <th>Song Title</th>
-          </tr>
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>Song Title</th>
+            </tr>
         </thead>
         <tbody>
-          <tr><td>1</td><td><a href="https://mikelocin29-star.github.io/See-You-Again-Piano-Intro/">See You Again - Piano Intro</a></td></tr>
-          <tr><td>2</td><td><a href="https://mikelocin29-star.github.io/See-You-Again-Chorus/">See You Again - Chorus</a></td></tr>
-          <tr><td>3</td><td><a href="https://mikelocin29-star.github.io/My-Favortite-Things-Verse/">My Favorite Things - Verse</a></td></tr>
-          <tr><td>4</td><td><a href="https://mikelocin29-star.github.io/My-Favortite-Things-Chorus/">My Favorite Things - Chorus</a></td></tr>
-          <tr><td>5</td><td><a href="https://mikelocin29-star.github.io/Happy-Birthday-To-You/">Happy Birthday To You</a></td></tr>
-          <tr><td>6</td><td><a href="https://mikelocin29-star.github.io/If-you-re-happy-and-you-know-it/">If You're Happy and You Know It</a></td></tr>
-          <tr><td>7</td><td><a href="https://mikelocin29-star.github.io/De-Re-Mi-Song---Intro/">Do-Re-Mi Song - Intro</a></td></tr>
-          <tr><td>8</td><td><a href="https://mikelocin29-star.github.io/Baby-Shark/">Baby-Shark</a></td></tr>
+            <!-- Your Active Songs (opens in the same tab) -->
+            <tr><td>1</td><td><a href="https://mikelocin29-star.github.io/See-You-Again-Piano-Intro/">See You Again - Piano Intro</a></td></tr>
+            <tr><td>2</td><td><a href="https://mikelocin29-star.github.io/See-You-Again-Chorus/">See You Again - Chorus</a></td></tr>
+            <tr><td>3</td><td><a href="https://mikelocin29-star.github.io/My-Favortite-Things-Verse/">My Favorite Things - Verse</a></td></tr>
+            <tr><td>4</td><td><a href="https://mikelocin29-star.github.io/My-Favortite-Things-Chorus/">My Favorite Things - Chorus</a></td></tr>
+            <tr><td>5</td><td><a href="https://mikelocin29-star.github.io/Happy-Birthday-To-You/">Happy Birthday To You</a></td></tr>
+            <tr><td>6</td><td><a href="https://mikelocin29-star.github.io/If-you-re-happy-and-you-know-it/">If You're Happy and You Know It</a></td></tr>
+            <tr><td>7</td><td><a href="https://mikelocin29-star.github.io/De-Re-Mi-Song---Intro/">Do-Re-Mi Song - Intro</a></td></tr>
 
-          <!-- Placeholders up to 50 songs -->
-          <tr class="placeholder"><td>8</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>9</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>10</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>11</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>12</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>13</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>14</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>15</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>16</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>17</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>18</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>19</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>20</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>21</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>22</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>23</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>24</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>25</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>26</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>27</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>28</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>29</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>30</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>31</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>32</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>33</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>34</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>35</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>36</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>37</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>38</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>39</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>40</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>41</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>42</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>43</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>44</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>45</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>46</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>47</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>48</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>49</td><td>Add next song here...</td></tr>
-          <tr class="placeholder"><td>50</td><td>Add next song here...</td></tr>
+            <!-- Future Song Placeholders (Up to 50) -->
+            <tr class="placeholder"><td>8</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>9</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>10</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>11</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>12</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>13</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>14</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>15</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>16</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>17</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>18</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>19</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>20</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>21</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>22</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>23</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>24</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>25</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>26</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>27</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>28</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>29</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>30</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>31</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>32</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>33</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>34</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>35</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>36</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>37</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>38</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>39</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>40</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>41</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>42</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>43</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>44</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>45</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>46</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>47</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>48</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>49</td><td>Add next song here...</td></tr>
+            <tr class="placeholder"><td>50</td><td>Add next song here...</td></tr>
         </tbody>
-      </table>
-    </div>
-  </div>
+    </table>
 
-
-  <!-- 
-    NOTE FOR INDIVIDUAL SONG PAGES:
-    If you are building an individual song page, keep the section below (the Back link, 
-    sheet music image, and piano keyboard) and remove the 'library-section' div above.
-  -->
-
-  <!-- BACK TO LIBRARY LINK (Used on individual song pages) -->
-  <div class="nav-container">
-    <a href="https://mikelocin29-star.github.io/Ms-Kim-s-Online-Keyboard/">← Back to Song Library</a>
-  </div>
-
-  <h1>Online Piano (C4 - G5)</h1>
-  <p>White keys: <b>1 to =</b> | Black keys: <b>Q,W | R,T,Y | I,O | [</b> (or click with your mouse!)</p>
-
-  <img src="notation.png" alt="Piano Grid Notation" class="sheet-music" onerror="this.style.display='none'">
-
-  <div id="piano">
-    <!-- White Keys (C4 to G5) -->
-    <div class="key white" data-note="C4" data-key="1">1</div>
-    <div class="key white" data-note="D4" data-key="2">2</div>
-    <div class="key white" data-note="E4" data-key="3">3</div>
-    <div class="key white" data-note="F4" data-key="4">4</div>
-    <div class="key white" data-note="G4" data-key="5">5</div>
-    <div class="key white" data-note="A4" data-key="6">6</div>
-    <div class="key white" data-note="B4" data-key="7">7</div>
-    <div class="key white" data-note="C5" data-key="8">8</div>
-    <div class="key white" data-note="D5" data-key="9">9</div>
-    <div class="key white" data-note="E5" data-key="0">0</div>
-    <div class="key white" data-note="F5" data-key="-">-</div>
-    <div class="key white" data-note="G5" data-key="=">=</div>
-
-    <!-- Black Keys -->
-    <div class="key black" data-note="C#4" data-key="q" style="left: 37px;">Q</div>
-    <div class="key black" data-note="D#4" data-key="w" style="left: 77px;">W</div>
-    <div class="key black" data-note="F#4" data-key="r" style="left: 157px;">R</div>
-    <div class="key black" data-note="G#4" data-key="t" style="left: 197px;">T</div>
-    <div class="key black" data-note="A#4" data-key="y" style="left: 237px;">Y</div>
-    <div class="key black" data-note="C#5" data-key="i" style="left: 317px;">I</div>
-    <div class="key black" data-note="D#5" data-key="o" style="left: 357px;">O</div>
-    <div class="key black" data-note="F#5" data-key="[" style="left: 437px;">[</div>
-  </div>
-
-  <script>
-    const pianoSampler = new Tone.Sampler({
-      urls: {
-        "C4": "C4.mp3",
-        "D#4": "Ds4.mp3",
-        "F#4": "Fs4.mp3",
-        "A4": "A4.mp3",
-      },
-      baseUrl: "https://tonejs.github.io/audio/salamander/",
-    }).toDestination();
-
-    async function playNote(note, element) {
-      if (Tone.context.state !== 'running') {
-        await Tone.start();
-      }
-      pianoSampler.triggerAttackRelease(note, "8n");
-      if (element) {
-        element.classList.add('active');
-        setTimeout(() => element.classList.remove('active'), 150);
-      }
-    }
-
-    document.querySelectorAll('.key[data-note]').forEach(key => {
-      key.addEventListener('mousedown', () => playNote(key.dataset.note, key));
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.repeat) return;
-      const keyEl = document.querySelector(`.key[data-key="${e.key.toLowerCase()}"]`);
-      if (keyEl) playNote(keyEl.dataset.note, keyEl);
-    });
-  </script>
 </body>
 </html>
